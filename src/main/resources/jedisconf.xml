@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+     http://www.springframework.org/schema/beans 
+     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxIdle" value="200"></property>
+		<property name="minEvictableIdleTimeMillis" value="300000"></property>
+		<property name="numTestsPerEvictionRun" value="3"></property>
+		<property name="timeBetweenEvictionRunsMillis" value="60000"></property>
+	</bean>
+
+	<bean name="persistCache" class="redis.clients.jedis.JedisPool">
+		<constructor-arg index="0" ref="poolConfig" />
+		<constructor-arg index="1" value="localhost" />
+		<constructor-arg index="2" value="6379" />
+		<constructor-arg index="3" value="3000" />
+		<constructor-arg index="4" value="root" />
+	</bean>
+
+	<bean name="lruCache" class="redis.clients.jedis.JedisPool">
+		<constructor-arg index="0" ref="poolConfig" />
+		<constructor-arg index="1" value="localhost" />
+		<constructor-arg index="2" value="6379" />
+		<constructor-arg index="3" value="3000" />
+		<constructor-arg index="4" value="root" />
+	</bean>
+
+	<bean name="jedisPoolMap" class="java.util.HashMap">
+		<constructor-arg>
+			<map key-type="java.lang.String" value-type="redis.clients.jedis.JedisPool">
+				<entry key="persistCache" value-ref="persistCache"></entry>
+				<entry key="lruCache" value-ref="lruCache"></entry>
+			</map>
+		</constructor-arg>
+	</bean>
+</beans>	
